@@ -20,3 +20,10 @@ One of the biggest issues with incandescent bulbs is their massive inrush curren
 **Implementation**
 ------------------
 Our program is aiming to leverage the powerful RTOS built into the CC3220 to efficiently schedule ADC reads, network activity, and PWM via hardware interrupts, threading, and the network APIs built into the device.
+
+**Expectations**
+----------------
+- Low power, high efficiency device that has negligible overhead compared to current controllers.
+- Is a 'smart' device.
+- Is easy to set up and use.
+- Creates noticeable power and heat savings for the heating device.
