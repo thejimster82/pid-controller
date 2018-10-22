@@ -1,29 +1,51 @@
-# CC3220 PID Controller
+---
+# timerled
 
-Source code for simple PID controller meant for heating and lighting applications via phase control.
+---
 
-**What is it?**
----------------
-Our Capstone idea is a phase control dimmer meant for heating applications with incandescent bulbs, such as reptile cages. The code does the following:
-- Reads from a temperature sensor periodically via ADC read bursts.
-- Digitally filters temperature readings via an averaging filter.
-- Calculates the PID Control output with the temperature readings relative to a setpoint.
-- Increases / decreases the duty cycle of a hardware PWM timer based on the PID output.
-- Checks for zero-crossings to stay in phase with the 60 Hz, 120 VAC line voltage from an outlet.
-- Enables the timer at zero crossings for phase control of a triac gating the power to the lamp.
-- Connects to a phone app to communicate temperature regulation statistics and accepts user input for the set point of the PID controller.
+## Example Summary
 
-**Why?**
---------
-One of the biggest issues with incandescent bulbs is their massive inrush current and extremely high wattage requirements. This generates a lot of heat and significantly reduces the lifespan of the filaments because of electromigration. Our project aims to intelligently regulate power to these lamps to improve their lifespan, power savings, and heating efficiency.
+Sample application to periodically toggle an LED based off a timer.
 
-**Implementation**
-------------------
-Our program is aiming to leverage the powerful RTOS built into the CC3220 to efficiently schedule ADC reads, network activity, and PWM via hardware interrupts, threading, and the network APIs built into the device.
+## Peripherals Exercised
 
-**Expectations**
-----------------
-- Low power, high efficiency device that has negligible overhead compared to current controllers.
-- Is a 'smart' device.
-- Is easy to set up and use.
-- Creates noticeable power and heat savings for the heating device.
+* `Board_TIMER0` - Timer instance that toggles the LED.
+* `Board_GPIO_LED0` - LED toggled in the callback function.
+
+## Resources & Jumper Settings
+
+> If you're using an IDE (such as CCS or IAR), please refer to Board.html in
+your project directory for resources used and board-specific jumper settings.
+Otherwise, you can find Board.html in the directory
+&lt;SDK_INSTALL_DIR&gt;/source/ti/boards/&lt;BOARD&gt;.
+
+
+## Example Usage
+
+* The example performs general initialization in `mainThread`.
+
+## Application Design Details
+
+This application uses one thread, `mainThread`. The timer is operating in
+Timer_CONTINUOUS_CALLBACK mode which causes the callback function,
+`timerCallback`, to be called at a rate specified by `period`. A `period` of
+1,000,000 microseconds or 1 second is used. Because the LED is toggled each
+time `timerCallback` is called, the observed frequency the LED blinks is once
+every 2 seconds.
+
+TI-RTOS:
+
+* When building in Code Composer Studio, the kernel configuration project will
+be imported along with the example. The kernel configuration project is
+referenced by the example, so it will be built first. The "release" kernel
+configuration is the default project used. It has many debug features disabled.
+These feature include assert checking, logging and runtime stack checks. For a
+detailed difference between the "release" and "debug" kernel configurations and
+how to switch between them, please refer to the SimpleLink MCU SDK User's
+Guide. The "release" and "debug" kernel configuration projects can be found
+under &lt;SDK_INSTALL_DIR&gt;/kernel/tirtos/builds/&lt;BOARD&gt;/(release|debug)/(ccs|gcc).
+
+FreeRTOS:
+
+* Please view the `FreeRTOSConfig.h` header file for example configuration
+information.

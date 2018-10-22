@@ -56,5 +56,4 @@ void set_errors(pid_args *state, pid_errs errors);
 
 // PID controller function
 double control(pid_args *state);
-
 #endif

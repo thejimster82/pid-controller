@@ -26,7 +26,7 @@ void adjust_params(pid_args *state) {
     pid_errs curr_errs = state->errs;
 
     // Apply the correction formula
-    double correction = (curr_errs.cum_err / (curr_coefficients.tuning_window * temps.set_point))
+    double correction = (curr_errs.cum_err / (curr_coefficients.tuning_window * temps.set_point));
 
     // Reset the tuning iterator and correct the parameters
     pid_params new_coefficients = (pid_params) {
@@ -80,22 +80,23 @@ double control(pid_args *state) {
     // Update the timestamp
     state->time_stamp = now;
 
+    // Update error values
+    pid_errs new_errs = (pid_errs) {
+        i_err,
+        error,
+        0
+    };
+
     // Tune PID coefficients as needed and update errors
     if (coefficients.tuning_progress == coefficients.tuning_window) {
         adjust_params(state);
-        set_errors(state, (pid_errs) {
-            i_err,
-            error,
-            0
-        });
     } else {
-        set_errors(state, (pid_errs) {
-            i_err,
-            error,
-            state->errs.cum_err + fabs(error)
-        });
+        new_errs.cum_err = state->errs.cum_err + fabs(error);
     }
 
-    // Return the change in duty cycle
+    // Push changes to controller
+    set_errors(state, new_errs);
+
+    // Return the new output
     return out;
 }
