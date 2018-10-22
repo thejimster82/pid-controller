@@ -20,12 +20,15 @@ void set_params(pid_args *state, pid_params coefficients) {
 
 // Self-tuning PID mechanism
 void adjust_params(pid_args *state) {
+    // Extract the state information
     pid_temps temps = state->temps;
     pid_params curr_coefficients = state->coefficients;
     pid_errs curr_errs = state->errs;
 
+    // Apply the correction formula
     double correction = (curr_errs.cum_err / (curr_coefficients.tuning_window * temps.set_point))
 
+    // Reset the tuning iterator and correct the parameters
     pid_params new_coefficients = (pid_params) {
         curr_coefficients.Kp - correction,
         curr_coefficients.Ki - correction,
@@ -33,6 +36,9 @@ void adjust_params(pid_args *state) {
         0,
         curr_coefficients.tuning_window
     };
+
+    // Push the changes to the controller
+    set_params(state, new_coefficients);
 }
 
 // Function to update error state
