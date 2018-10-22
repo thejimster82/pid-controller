@@ -36,8 +36,6 @@ void adjust_params(pid_args *state) {
         0,
         curr_coefficients.tuning_window
     };
-    
-    set_errors()
 
     // Push the changes to the controller
     set_params(state, new_coefficients);
