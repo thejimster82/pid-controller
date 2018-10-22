@@ -80,7 +80,7 @@ double control(pid_args *state) {
     // Update the timestamp
     state->time_stamp = now;
 
-    // Tune PID coefficients as needed
+    // Tune PID coefficients as needed and update errors
     if (coefficients.tuning_progress == coefficients.tuning_window) {
         adjust_params(state);
         set_errors(state, (pid_errs) {
@@ -88,14 +88,13 @@ double control(pid_args *state) {
             error,
             0
         });
+    } else {
+        set_errors(state, (pid_errs) {
+            i_err,
+            error,
+            state->errs.cum_err + fabs(error)
+        });
     }
-
-    // Update errors
-    set_errors(state, (pid_errs) {
-        i_err,
-        error,
-        state->errs.cum_err + fabs(error)
-    });
 
     // Return the change in duty cycle
     return out;
