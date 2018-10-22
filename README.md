@@ -1,51 +1,26 @@
----
-# timerled
+pid-controller
+==============
 
----
+This project was designed by **Powell Rangers** for their Capstone project for 2018. This is a PID controller meant for local temperature regulation applications. 
 
-## Example Summary
+## Purpose
 
-Sample application to periodically toggle an LED based off a timer.
+Traditional heating applications use high wattage incandescent bulbs, heat lamps, etc. These lamps tend to die out very quickly, and the power consumption is rather wasteful because of large inrush currents affecting the bulb and continuous operation at maximum power even when it is not necessary. This project aims to solve that problem by creating an affordable PID mechanism for the lamp, thus saving farmers (or other users) money.
 
-## Peripherals Exercised
+Furthermore, this project aims to bring the IoT spin to the project for full automation. The controller will have internet connectivity and will interface with an external app. The motivation behind this is to make the controller a hands-free solution, where a user simply sets their desired temperature and can simply adjust it wherever and whenever they please.
 
-* `Board_TIMER0` - Timer instance that toggles the LED.
-* `Board_GPIO_LED0` - LED toggled in the callback function.
+## Algorithm
 
-## Resources & Jumper Settings
+The project will be doing a number of things:
 
-> If you're using an IDE (such as CCS or IAR), please refer to Board.html in
-your project directory for resources used and board-specific jumper settings.
-Otherwise, you can find Board.html in the directory
-&lt;SDK_INSTALL_DIR&gt;/source/ti/boards/&lt;BOARD&gt;.
+1. Reading data from a temperature probe via the Dallas 1-Wire protocol.
+2. Continuously updating the state of a PID algorithm at a fixed interval.
+3. Pulse width modulating a triac carrying 120 VAC at some fraction of 60 Hz.
+4. Using the PID data to adjust the pulse width.
+5. Continuously updating an LCD screen via I<sup>2</sup>C to display the set point, etc.
+6. Accepting input from a pushbutton rotary encoder to adjust the set point.
+7. Transmitting data to the phone app over WiFi, via some form of socket.
 
+## Technology
 
-## Example Usage
-
-* The example performs general initialization in `mainThread`.
-
-## Application Design Details
-
-This application uses one thread, `mainThread`. The timer is operating in
-Timer_CONTINUOUS_CALLBACK mode which causes the callback function,
-`timerCallback`, to be called at a rate specified by `period`. A `period` of
-1,000,000 microseconds or 1 second is used. Because the LED is toggled each
-time `timerCallback` is called, the observed frequency the LED blinks is once
-every 2 seconds.
-
-TI-RTOS:
-
-* When building in Code Composer Studio, the kernel configuration project will
-be imported along with the example. The kernel configuration project is
-referenced by the example, so it will be built first. The "release" kernel
-configuration is the default project used. It has many debug features disabled.
-These feature include assert checking, logging and runtime stack checks. For a
-detailed difference between the "release" and "debug" kernel configurations and
-how to switch between them, please refer to the SimpleLink MCU SDK User's
-Guide. The "release" and "debug" kernel configuration projects can be found
-under &lt;SDK_INSTALL_DIR&gt;/kernel/tirtos/builds/&lt;BOARD&gt;/(release|debug)/(ccs|gcc).
-
-FreeRTOS:
-
-* Please view the `FreeRTOSConfig.h` header file for example configuration
-information.
+The project uses the TI CC3220SF LaunchPad to facilitate internet connectivity, provide the processing power for the PID control algorithm, and provide the hardware for the PWM switching technique we are using for PID regulation.
